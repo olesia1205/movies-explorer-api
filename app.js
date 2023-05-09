@@ -7,11 +7,8 @@ const routes = require('./routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const centralErrorHandler = require('./errors/CentralErrorHandler');
 
-const MONGO_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb';
-
 const app = express();
 
-mongoose.connect(MONGO_URL, {});
 app.use(cors());
 
 app.use(requestLogger);
@@ -23,12 +20,10 @@ app.use(errors());
 app.use(centralErrorHandler);
 
 async function connect() {
-  try {
-    await app.listen(process.env.PORT || 3000);
-    console.log(`Server listen port ${process.env.PORT}`);
-  } catch (e) {
-    console.log(e);
-  }
+  await mongoose.connect(process.env.MONGO_URL, {});
+  // console.log(`Server connected db ${process.env.MONGO_URL}`);
+  await app.listen(process.env.PORT);
+  // console.log(`Server listen port ${process.env.PORT}`);
 }
 
 connect();

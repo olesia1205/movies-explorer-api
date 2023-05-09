@@ -39,3 +39,18 @@ module.exports.validateCreateMovie = celebrate({
 module.exports.validateMovieId = celebrate({
   params: Joi.object().keys({ movieId: Joi.string().required().hex().length(24) }),
 });
+
+module.exports.validateSignupUser = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().min(6).required(),
+    name: Joi.string().min(2).max(30),
+  }),
+});
+
+module.exports.validateSigninUser = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().min(6).required().alphanum(),
+  }),
+});
