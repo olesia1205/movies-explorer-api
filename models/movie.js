@@ -1,4 +1,4 @@
-// const validator = require('validator');
+const validator = require('validator');
 const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
@@ -23,28 +23,27 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    url: {
-      type: String,
-      required: true,
+    type: String,
+    required: true,
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: 'Поле image должно быть валидным URL',
     },
-    // validate: {
-    //   validator: (value) => validator.isURL(
-    //     value,
-    //     { protocols: ['http', 'https'], require_protocol: true },
-    //   ),
-    //   message: 'Должен быть валидным URL',
-    // },
   },
   trailerLink: {
-    url: {
-      type: String,
-      required: true,
+    type: String,
+    required: true,
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: 'Поле trailerLink должно быть валидным URL',
     },
   },
   thumbnail: {
-    url: {
-      type: String,
-      required: true,
+    type: String,
+    required: true,
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: 'Поле thumbnail должно быть валидным URL',
     },
   },
   owner: {
@@ -53,8 +52,8 @@ const movieSchema = new mongoose.Schema({
     ref: 'user',
   },
   movieId: {
+    type: Number,
     required: true,
-    type: mongoose.Schema.Types.ObjectId,
   },
   nameRU: {
     type: String,

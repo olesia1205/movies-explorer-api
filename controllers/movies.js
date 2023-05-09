@@ -9,18 +9,44 @@ const CREATED = http2.constants.HTTP_STATUS_CREATED;
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
-    .populate(['owner', 'likes'])
+    .populate(['owner'])
     .sort({ createdAt: -1 })
-    .then((cards) => res.status(OK).send(cards))
+    .then((movies) => res.status(OK).send(movies))
     .catch(next);
 };
 
 module.exports.createMovie = (req, res, next) => {
-  const { name, link } = req.body;
-  Movie.create({ name, link, owner: req.user })
-    .then((card) => {
-      card.populate(['owner'])
-        .then(() => res.status(CREATED).send(card));
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+  } = req.body;
+
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+    owner: req.user,
+  })
+    .then((movie) => {
+      movie.populate(['owner'])
+        .then(() => res.status(CREATED).send(movie));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -32,56 +58,18 @@ module.exports.createMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.cardId)
-    .orFail(() => new NotFoundError('Карточка с указанным _id не найдена'))
-    .then((card) => {
-      if (`${card.owner}` !== req.user._id) {
-        throw new ForbiddenError('Нет доступа на удаление чужой карточки');
+  Movie.findById(req.params.movieId)
+    .orFail(() => new NotFoundError('Movie с указанным _id не найден'))
+    .then((movie) => {
+      if (`${movie.owner}` !== req.user._id) {
+        throw new ForbiddenError('Нет доступа на удаление чужого movie');
       }
-      return card.deleteOne()
-        .then(() => res.status(OK).send(card));
+      return movie.deleteOne()
+        .then(() => res.status(OK).send(movie));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный id карточки'));
-        return;
-      }
-      next(err);
-    });
-};
-
-module.exports.putLike = (req, res, next) => {
-  Movie.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
-      } else {
-        res.status(OK).send(card);
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный id карточки'));
-        return;
-      }
-      next(err);
-    });
-};
-
-module.exports.deleteLike = (req, res, next) => {
-  Movie.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
-      } else {
-        res.status(OK).send(card);
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный id карточки'));
+        next(new BadRequestError('Невалидный id movie'));
         return;
       }
       next(err);
