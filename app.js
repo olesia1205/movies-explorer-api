@@ -10,6 +10,7 @@ const { PORT, MONGO_URL } = require('./utils/config');
 
 const app = express();
 
+mongoose.connect(MONGO_URL, {});
 app.use(cors());
 
 app.use(requestLogger);
@@ -21,10 +22,12 @@ app.use(errors());
 app.use(centralErrorHandler);
 
 async function connect() {
-  await mongoose.connect(MONGO_URL, {});
-  // console.log(`Server connected db ${process.env.MONGO_URL}`);
-  await app.listen(PORT);
-  // console.log(`Server listen port ${process.env.PORT}`);
+  try {
+    await app.listen(PORT);
+    // console.log(`Server listen port ${PORT}`);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 connect();
