@@ -6,6 +6,7 @@ const cors = require('cors');
 const routes = require('./routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const centralErrorHandler = require('./errors/CentralErrorHandler');
+const { PORT, MONGO_URL } = require('./utils/config');
 
 const app = express();
 
@@ -20,9 +21,9 @@ app.use(errors());
 app.use(centralErrorHandler);
 
 async function connect() {
-  await mongoose.connect(process.env.MONGO_URL, {});
+  await mongoose.connect(MONGO_URL, {});
   // console.log(`Server connected db ${process.env.MONGO_URL}`);
-  await app.listen(process.env.PORT);
+  await app.listen(PORT);
   // console.log(`Server listen port ${process.env.PORT}`);
 }
 
