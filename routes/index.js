@@ -13,7 +13,7 @@ routes.post('/signin', express.json(), validateSigninUser, login);
 routes.use('/users', auth, usersRouter);
 routes.use('/movies', auth, moviesRouter);
 
-routes.use('*', (req, res, next) => {
+routes.use('*', auth, (req, res, next) => {
   next(new NotFoundError('По указанному url ничего нет'));
 });
 

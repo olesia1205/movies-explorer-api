@@ -35,6 +35,10 @@ module.exports.updateUser = (req, res, next) => {
         next(new BadRequestError('Произошла ошибка валидации полей'));
         return;
       }
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        next(new ConflictError('Пользователь с такой почтой уже существует'));
+        return;
+      }
       next(err);
     });
 };

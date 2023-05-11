@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    // index: { unique: true },
     validate: {
       validator: (value) => validator.isEmail(value),
       message: 'Неправильный формат почты',
@@ -19,6 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
   },

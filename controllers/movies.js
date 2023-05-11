@@ -8,7 +8,7 @@ const OK = http2.constants.HTTP_STATUS_OK;
 const CREATED = http2.constants.HTTP_STATUS_CREATED;
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .populate(['owner'])
     .sort({ createdAt: -1 })
     .then((movies) => res.status(OK).send(movies))
@@ -46,7 +46,8 @@ module.exports.createMovie = (req, res, next) => {
   })
     .then((movie) => {
       movie.populate(['owner'])
-        .then(() => res.status(CREATED).send(movie));
+        .then(() => res.status(CREATED).send(movie))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
